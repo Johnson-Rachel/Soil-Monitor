@@ -5,7 +5,7 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 int rainPin = A0;
 int greenLED = 6;
 int redLED = 7;
-// you can adjust the threshold value
+// you can adjust the threshold value - max is 1023
 int thresholdValue = 1000;
 
 int lightPin = A1;
@@ -25,8 +25,8 @@ void setup(){
 }
 
 void loop() {
+  // read the input on analog pin 1:
   int lightValue = analogRead(lightPin);
-  //Serial.println(lightValue);
 
   if(lightValue > 150){
     // read the input on analog pin 0:
@@ -37,9 +37,12 @@ void loop() {
     lcd.setCursor(0,1);
     //Serial.print(sensorValue);
     
-    if(sensorValue < thresholdValue){
-      //Serial.println(" - Doesn't need watering");
-      lcd.print("Good");
+    int t = millis()/3600000;
+    if(sensorValue < thresholdValue || t < 48){
+      lcd.setCursor(7,0);
+      lcd.print(t);
+      lcd.setCursor(0,1);
+      lcd.print("Hrs since reset");
       digitalWrite(redLED, LOW);
       digitalWrite(greenLED, HIGH);
       delay(1000);
@@ -47,7 +50,6 @@ void loop() {
       delay(59000);
     }
     else {
-      //Serial.println(" - Time to water your plant");
       lcd.print("Time to Water!");
       digitalWrite(redLED, HIGH);
       digitalWrite(greenLED, LOW);
